@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Buzzer System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .header {
+            background-color: #4285f4;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .buzzer-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .buzzer-btn {
+            padding: 30px;
+            font-size: 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background-color: #4285f4;
+            color: white;
+        }
+        .buzzer-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .buzzer-btn.winner {
+            background-color: #0f9d58;
+            animation: pulse 0.5s 3;
+        }
+        .reset-btn {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #db4437;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .status-panel {
+            background-color: #f1f1f1;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            min-height: 60px;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Quiz Buzzer System</h1>
+        <p>A responsive buzzer system for quiz competitions ensuring fairness and accuracy</p>
+    </div>
+    
+    <div class="status-panel" id="status">
+        <h3>System Status</h3>
+        <p>Ready for responses...</p>
+    </div>
+    
+    <div class="buzzer-container">
+        <button class="buzzer-btn" onclick="buzz(1)">Contestant 1</button>
+        <button class="buzzer-btn" onclick="buzz(2)">Contestant 2</button>
+        <button class="buzzer-btn" onclick="buzz(3)">Contestant 3</button>
+        <button class="buzzer-btn" onclick="buzz(4)">Contestant 4</button>
+    </div>
+    
+    <button class="reset-btn" onclick="reset()">Reset System</button>
+    
+    <audio id="buzzer-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-game-show-buzzer-980.mp3"></audio>
+    
+    <script>
+        let isLocked = false;
+        let winner = null;
+        const buzzerSound = document.getElementById('buzzer-sound');
+        const statusEl = document.getElementById('status');
+        const buttons = document.querySelectorAll('.buzzer-btn');
+        
+        function buzz(contestant) {
+            if (!isLocked) {
+                isLocked = true;
+                winner = contestant;
+                
+                // Play sound
+                buzzerSound.currentTime = 0;
+                buzzerSound.play();
+                
+                // Visual feedback
+                buttons[contestant-1].classList.add('winner');
+                statusEl.innerHTML = `
+                    <h3>System Status</h3>
+                    <p>Contestant ${contestant} buzzed first!</p>
+                    <p>System locked</p>
+                `;
+                
+                // Disable other buttons
+                buttons.forEach(btn => {
+                    if (!btn.classList.contains('winner')) {
+                        btn.disabled = true;
+                    }
+                });
+            }
+        }
+        
+        function reset() {
+            isLocked = false;
+            winner = null;
+            
+            // Reset all buttons
+            buttons.forEach(btn => {
+                btn.classList.remove('winner');
+                btn.disabled = false;
+            });
+            
+            statusEl.innerHTML = `
+                <h3>System Status</h3>
+                <p>Ready for responses...</p>
+            `;
+        }
+    </script>
+</body>
+</html>
